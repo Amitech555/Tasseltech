@@ -6,6 +6,7 @@ import { PhotoAlbumsSection } from "@/components/PhotoAlbumsSection";
 import { AudioMemoriesSection } from "@/components/AudioMemoriesSection";
 import { QuizSection } from "@/components/QuizSection";
 import { BirthdaysSection } from "@/components/BirthdaysSection";
+import { TrustSection } from "@/components/TrustSection";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
 
@@ -21,6 +22,7 @@ const Index = () => {
         <AudioMemoriesSection />
         <QuizSection />
         <BirthdaysSection />
+        <TrustSection />
         <CTASection />
       </main>
       <Footer />
