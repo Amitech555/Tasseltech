@@ -30,9 +30,9 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-warm flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-lg">M</span>
+                <span className="text-primary-foreground font-display font-bold text-lg">T</span>
               </div>
-              <span className="font-display text-xl font-semibold text-foreground">Mémoires</span>
+              <span className="font-display text-xl font-semibold text-foreground">Tasseltech</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Préservez et partagez vos souvenirs familiaux les plus précieux pour les générations futures.
@@ -94,7 +94,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 Mémoires. Tous droits réservés.
+            © 2024 Tasseltech. Tous droits réservés.
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             Fait avec <Heart className="w-4 h-4 text-accent fill-accent" /> pour les familles

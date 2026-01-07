@@ -21,9 +21,9 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-gradient-warm flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">M</span>
+              <span className="text-primary-foreground font-display font-bold text-lg">T</span>
             </div>
-            <span className="font-display text-xl font-semibold text-foreground">Mémoires</span>
+            <span className="font-display text-xl font-semibold text-foreground">Tasseltech</span>
           </Link>
 
           {/* Desktop Navigation */}
