@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { label: "Arbre Familial", href: "#family-tree" },
@@ -9,10 +10,12 @@ const navItems = [
   { label: "Souvenirs Audio", href: "#audio" },
   { label: "Quiz IA", href: "#quiz" },
   { label: "Anniversaires", href: "#birthdays" },
+  { label: "Sécurité", href: "#securite" },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -39,10 +42,31 @@ export function Header() {
             ))}
           </nav>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">Connexion</Button>
-            <Button variant="warm" size="sm">Commencer</Button>
+            {user ? (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/dashboard">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Mon espace
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Déconnexion
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/auth">Connexion</Link>
+                </Button>
+                <Button variant="warm" size="sm" asChild>
+                  <Link to="/auth">Commencer</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -69,8 +93,25 @@ export function Header() {
                 </a>
               ))}
               <div className="flex flex-col gap-2 mt-4 px-4">
-                <Button variant="ghost" className="w-full">Connexion</Button>
-                <Button variant="warm" className="w-full">Commencer</Button>
+                {user ? (
+                  <>
+                    <Button variant="ghost" className="w-full" asChild>
+                      <Link to="/dashboard">Mon espace</Link>
+                    </Button>
+                    <Button variant="outline" className="w-full" onClick={signOut}>
+                      Déconnexion
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" className="w-full" asChild>
+                      <Link to="/auth">Connexion</Link>
+                    </Button>
+                    <Button variant="warm" className="w-full" asChild>
+                      <Link to="/auth">Commencer</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </div>

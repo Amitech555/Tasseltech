@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart } from "lucide-react";
 
@@ -25,9 +26,11 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="warm" size="lg" className="gap-2 w-full sm:w-auto">
-              Créer mon espace gratuit
-              <ArrowRight className="w-5 h-5" />
+            <Button variant="warm" size="lg" className="gap-2 w-full sm:w-auto" asChild>
+              <Link to="/auth">
+                Créer mon espace gratuit
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </Button>
             <Button variant="outline" size="lg" className="w-full sm:w-auto">
               Voir la démo
