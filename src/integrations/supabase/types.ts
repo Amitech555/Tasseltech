@@ -14,16 +14,206 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      families: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          public_page_enabled: boolean
+          public_page_slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          public_page_enabled?: boolean
+          public_page_slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          public_page_enabled?: boolean
+          public_page_slug?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      family_members: {
+        Row: {
+          family_id: string
+          id: string
+          invited_by: string | null
+          joined_at: string
+          role: Database["public"]["Enums"]["family_role"]
+          user_id: string
+        }
+        Insert: {
+          family_id: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string
+          role?: Database["public"]["Enums"]["family_role"]
+          user_id: string
+        }
+        Update: {
+          family_id?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string
+          role?: Database["public"]["Enums"]["family_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_comments: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          memory_id: string
+          user_id: string | null
+        }
+        Insert: {
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          memory_id: string
+          user_id?: string | null
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          memory_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_comments_memory_id_fkey"
+            columns: ["memory_id"]
+            isOneToOne: false
+            referencedRelation: "shared_memories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shared_memories: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          family_id: string
+          id: string
+          likes_count: number
+          media_type: string | null
+          media_url: string | null
+          public_link_token: string | null
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["visibility_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          family_id: string
+          id?: string
+          likes_count?: number
+          media_type?: string | null
+          media_url?: string | null
+          public_link_token?: string | null
+          title: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["visibility_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          family_id?: string
+          id?: string
+          likes_count?: number
+          media_type?: string | null
+          media_url?: string | null
+          public_link_token?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["visibility_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_memories_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_family_role: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["family_role"]
+      }
+      is_family_admin: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      family_role: "master" | "cohost" | "member"
+      visibility_type: "private" | "family" | "members_only" | "public_link"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +340,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      family_role: ["master", "cohost", "member"],
+      visibility_type: ["private", "family", "members_only", "public_link"],
+    },
   },
 } as const
