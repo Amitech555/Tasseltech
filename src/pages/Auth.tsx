@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,8 +23,8 @@ const signupSchema = z.object({
   password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
+  message: 'Les mots de passe ne correspondent pas',
+  path: ['confirmPassword'],
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -32,6 +32,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, signIn, signUp } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,14 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      // Check for pending invite in sessionStorage
+      const pendingToken = sessionStorage.getItem('pendingInviteToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInviteToken');
+        navigate(`/rejoindre/${pendingToken}`);
+      } else {
+        navigate('/dashboard');
+      }
     }
   }, [user, navigate]);
 
@@ -57,15 +65,11 @@ export default function Auth() {
     setIsLoading(true);
     const { error } = await signIn(data.email, data.password);
     setIsLoading(false);
-
     if (error) {
-      let message = "Une erreur est survenue";
-      if (error.message.includes('Invalid login credentials')) {
-        message = "Email ou mot de passe incorrect";
-      } else if (error.message.includes('Email not confirmed')) {
-        message = "Veuillez confirmer votre email avant de vous connecter";
-      }
-      toast({ title: "Erreur de connexion", description: message, variant: "destructive" });
+      let message = 'Une erreur est survenue';
+      if (error.message.includes('Invalid login credentials')) message = 'Email ou mot de passe incorrect';
+      else if (error.message.includes('Email not confirmed')) message = 'Veuillez confirmer votre email avant de vous connecter';
+      toast({ title: 'Erreur de connexion', description: message, variant: 'destructive' });
     }
   };
 
@@ -73,18 +77,12 @@ export default function Auth() {
     setIsLoading(true);
     const { error } = await signUp(data.email, data.password, data.fullName);
     setIsLoading(false);
-
     if (error) {
-      let message = "Une erreur est survenue";
-      if (error.message.includes('User already registered')) {
-        message = "Cet email est déjà utilisé";
-      }
-      toast({ title: "Erreur d'inscription", description: message, variant: "destructive" });
+      let message = 'Une erreur est survenue';
+      if (error.message.includes('User already registered')) message = 'Cet email est déjà utilisé';
+      toast({ title: "Erreur d'inscription", description: message, variant: 'destructive' });
     } else {
-      toast({
-        title: "Inscription réussie !",
-        description: "Vérifiez votre email pour confirmer votre compte",
-      });
+      toast({ title: 'Inscription réussie !', description: 'Vérifiez votre email pour confirmer votre compte' });
       setActiveTab('login');
     }
   };
@@ -99,7 +97,6 @@ export default function Auth() {
           </div>
           <p className="text-muted-foreground">Préservez vos souvenirs familiaux</p>
         </div>
-
         <Card className="border-border/50 shadow-xl">
           <CardHeader className="space-y-1 pb-4">
             <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 mb-2">
@@ -107,9 +104,7 @@ export default function Auth() {
               <span>Connexion sécurisée</span>
             </div>
             <CardTitle className="text-2xl">Bienvenue</CardTitle>
-            <CardDescription>
-              Connectez-vous ou créez un compte pour accéder à votre espace familial
-            </CardDescription>
+            <CardDescription>Connectez-vous ou créez un compte pour accéder à votre espace familial</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -117,103 +112,55 @@ export default function Auth() {
                 <TabsTrigger value="login">Connexion</TabsTrigger>
                 <TabsTrigger value="signup">Inscription</TabsTrigger>
               </TabsList>
-
               <TabsContent value="login">
                 <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="votre@email.com"
-                      {...loginForm.register('email')}
-                    />
-                    {loginForm.formState.errors.email && (
-                      <p className="text-sm text-destructive">{loginForm.formState.errors.email.message}</p>
-                    )}
+                    <Input id="login-email" type="email" placeholder="votre@email.com" {...loginForm.register('email')} />
+                    {loginForm.formState.errors.email && <p className="text-sm text-destructive">{loginForm.formState.errors.email.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Mot de passe</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      {...loginForm.register('password')}
-                    />
-                    {loginForm.formState.errors.password && (
-                      <p className="text-sm text-destructive">{loginForm.formState.errors.password.message}</p>
-                    )}
+                    <Input id="login-password" type="password" placeholder="••••••••" {...loginForm.register('password')} />
+                    {loginForm.formState.errors.password && <p className="text-sm text-destructive">{loginForm.formState.errors.password.message}</p>}
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Se connecter
+                    {isLoading && <Loader2 className="w-4 h-4 animate-spin mr-2" />} Se connecter
                   </Button>
                 </form>
               </TabsContent>
-
               <TabsContent value="signup">
                 <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Nom complet</Label>
-                    <Input
-                      id="signup-name"
-                      placeholder="Jean Dupont"
-                      {...signupForm.register('fullName')}
-                    />
-                    {signupForm.formState.errors.fullName && (
-                      <p className="text-sm text-destructive">{signupForm.formState.errors.fullName.message}</p>
-                    )}
+                    <Input id="signup-name" placeholder="Jean Dupont" {...signupForm.register('fullName')} />
+                    {signupForm.formState.errors.fullName && <p className="text-sm text-destructive">{signupForm.formState.errors.fullName.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="votre@email.com"
-                      {...signupForm.register('email')}
-                    />
-                    {signupForm.formState.errors.email && (
-                      <p className="text-sm text-destructive">{signupForm.formState.errors.email.message}</p>
-                    )}
+                    <Input id="signup-email" type="email" placeholder="votre@email.com" {...signupForm.register('email')} />
+                    {signupForm.formState.errors.email && <p className="text-sm text-destructive">{signupForm.formState.errors.email.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Mot de passe</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      {...signupForm.register('password')}
-                    />
-                    {signupForm.formState.errors.password && (
-                      <p className="text-sm text-destructive">{signupForm.formState.errors.password.message}</p>
-                    )}
+                    <Input id="signup-password" type="password" placeholder="••••••••" {...signupForm.register('password')} />
+                    {signupForm.formState.errors.password && <p className="text-sm text-destructive">{signupForm.formState.errors.password.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-confirm">Confirmer le mot de passe</Label>
-                    <Input
-                      id="signup-confirm"
-                      type="password"
-                      placeholder="••••••••"
-                      {...signupForm.register('confirmPassword')}
-                    />
-                    {signupForm.formState.errors.confirmPassword && (
-                      <p className="text-sm text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>
-                    )}
+                    <Input id="signup-confirm" type="password" placeholder="••••••••" {...signupForm.register('confirmPassword')} />
+                    {signupForm.formState.errors.confirmPassword && <p className="text-sm text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>}
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Créer mon compte
+                    {isLoading && <Loader2 className="w-4 h-4 animate-spin mr-2" />} Créer mon compte
                   </Button>
                 </form>
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
-
         <p className="text-center text-sm text-muted-foreground mt-6">
-          <a href="/" className="hover:text-primary transition-colors">
-            ← Retour à l'accueil
-          </a>
+          <a href="/" className="hover:text-primary transition-colors">← Retour à l’accueil</a>
         </p>
       </div>
     </div>
