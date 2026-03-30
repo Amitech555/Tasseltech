@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-family.jpg";
+import { useNavigate } from "react-router-dom";
 
 export function HeroSection() {
+  const navigate = useNavigate();
+
+  const scrollToFeatures = () => {
+    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Image */}
@@ -26,7 +33,7 @@ export function HeroSection() {
             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 animate-fade-up"
             style={{ animationDelay: "0.1s" }}
           >
-            Vos <span className="text-gradient">souvenirs familiaux</span> méritent d'être partagés
+            Vos <span className="text-gradient">souvenirs familiaux</span> méritent d’être partagés
           </h1>
 
           <p 
@@ -41,10 +48,10 @@ export function HeroSection() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up"
             style={{ animationDelay: "0.3s" }}
           >
-            <Button variant="warm" size="lg">
+            <Button variant="warm" size="lg" onClick={() => navigate('/auth')}>
               Créer mon espace famille
             </Button>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" onClick={scrollToFeatures}>
               Découvrir les fonctionnalités
             </Button>
           </div>
