@@ -9,6 +9,7 @@ import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import FamilyPublicPage from './pages/FamilyPublicPage';
 import JoinFamily from './pages/JoinFamily';
+import Revelation from './pages/Revelation';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/famille/:slug" element={<FamilyPublicPage />} />
             <Route path="/rejoindre/:token" element={<JoinFamily />} />
+            <Route path="/revelation" element={<Revelation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
