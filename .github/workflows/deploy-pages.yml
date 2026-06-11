@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+# Builds the Vite app and publishes it to GitHub Pages so it can be opened
+# from any device (phone included) at:
+#   https://<user>.github.io/<repo>/
+# The personality game lives at /revelation.
+
+on:
+  push:
+    branches:
+      - claude/revelation-personality-game-ggfx0u
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, cancelling in-progress runs.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          # Auto-enable GitHub Pages for this repo if it isn't already.
+          enablement: true
+
+      - name: Build
+        env:
+          # Serve assets under the repository subpath (e.g. /Tasseltech/).
+          DEPLOY_BASE: ${{ steps.pages.outputs.base_path }}/
+        run: npm run build
+
+      - name: SPA fallback (client-side routing on refresh/deep links)
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

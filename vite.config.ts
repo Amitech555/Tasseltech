@@ -5,6 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Served at "/" by default (Vercel/Lovable). For GitHub Pages, the deploy
+  // workflow sets DEPLOY_BASE="/<repo>/" so assets resolve under the subpath.
+  base: process.env.DEPLOY_BASE || "/",
   server: {
     host: "::",
     port: 8080,

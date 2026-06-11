@@ -14,13 +14,16 @@ import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
+// "/" on Vercel/Lovable, "/<repo>" on GitHub Pages (from Vite's base).
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
