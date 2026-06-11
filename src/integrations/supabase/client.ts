@@ -2,8 +2,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Fallback placeholders so the app can boot (e.g. on a static preview build)
+// even when the Supabase env vars are not provided. Real deployments override
+// these with the actual values from the VITE_SUPABASE_* env variables.
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://placeholder.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? 'placeholder-anon-key';
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
